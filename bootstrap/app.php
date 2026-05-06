@@ -12,7 +12,7 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
-            'admin.basic' => \App\Http\Middleware\AdminBasicAuth::class,
+            'admin' => \App\Http\Middleware\AdminBasicAuth::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

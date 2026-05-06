@@ -1,30 +1,51 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\RedirectController;
 use App\Http\Controllers\Admin\AnalyticsController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\DomainController;
 use App\Http\Controllers\Admin\LinkController;
+use App\Http\Controllers\RedirectController;
+use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 
-Route::get('/', function () {
-    return view('welcome');
+/*
+|--------------------------------------------------------------------------
+| Web Routes
+|--------------------------------------------------------------------------
+|
+| Here is where you can register web routes for your application. These
+| routes are loaded by the RouteServiceProvider and all of them will
+| be assigned to the "web" middleware group. Make something great!
+|
+*/
+
+use App\Http\Controllers\AuthController;
+
+// Auth Routes
+Route::middleware('guest')->group(function () {
+    Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
+    Route::post('/login', [AuthController::class, 'login'])->name('login.post');
+});
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middleware('auth');
+
+Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/', DashboardController::class)->name('dashboard');
+
+    Route::resource('links', LinkController::class);
+    Route::post('links/bulk-update-destination', [LinkController::class, 'bulkUpdateDestination'])->name('links.bulkUpdateDestination');
+
+    Route::resource('domains', DomainController::class);
+    Route::post('domains/{domain}/toggle', [DomainController::class, 'toggleActive'])->name('domains.toggle');
+
+    Route::get('analytics', [AnalyticsController::class, 'index'])->name('analytics.index');
+
+
 });
 
-Route::prefix('admin')
-    ->middleware('admin.basic')
-    ->group(function () {
-        Route::get('/', DashboardController::class)->name('admin.dashboard');
+// Landing Page
+Route::get('/', function () {
+    return view('welcome');
+})->name('home');
 
-        Route::post('links/bulk-update-destination', [LinkController::class, 'bulkUpdateDestination'])
-            ->name('admin.links.bulkUpdateDestination');
-        Route::resource('links', LinkController::class)->names('admin.links')->except(['show']);
-
-        Route::post('domains/{domain}/toggle', [DomainController::class, 'toggle'])->name('admin.domains.toggle');
-        Route::resource('domains', DomainController::class)->names('admin.domains')->except(['show']);
-
-        Route::get('analytics', [AnalyticsController::class, 'index'])->name('admin.analytics.index');
-    });
-
-Route::get('/{slug}', RedirectController::class)
-    ->where('slug', '[^/]+');
+// Universal Shortlink Redirect (must be the last route)
+Route::get('/{slug}', RedirectController::class)->where('slug', '.*');
