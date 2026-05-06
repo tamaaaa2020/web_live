@@ -1,56 +1,60 @@
 @extends('admin.layout')
 
-@section('title', 'New Link')
+@section('title', 'Create New Link')
+@section('subtitle', 'Set up a new shortlink with custom or automatic slug.')
 
 @section('content')
-    <div class="bg-white border border-gray-200 rounded-xl p-4 max-w-2xl dark:bg-gray-800 dark:border-gray-700">
-        <form method="post" action="{{ route('admin.links.store') }}" class="space-y-4">
-            @csrf
+    <div class="max-w-2xl">
+        <div class="bg-white p-10 rounded-[2.5rem] border border-slate-100 shadow-sm">
+            <form method="POST" action="{{ route('admin.links.store') }}" class="space-y-8">
+                @csrf
 
-            <div>
-                <label for="slug-input" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Slug (optional)</label>
-                <div class="flex">
-                    <input type="text" id="slug-input" name="slug" value="{{ old('slug') }}" class="rounded-none rounded-s-lg bg-gray-50 border border-gray-300 text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 w-full text-sm p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="kosongkan untuk auto random *.mp4">
-                    <button type="button" id="generate-slug-btn" class="inline-flex items-center px-3 text-sm text-gray-900 bg-gray-200 border border-s-0 border-gray-300 rounded-e-md dark:bg-gray-600 dark:text-gray-400 dark:border-gray-600">
-                        Generate
-                    </button>
+                <div>
+                    <label for="slug" class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-3 px-1">Short Slug</label>
+                    <div class="flex gap-2">
+                        <input type="text" id="slug" name="slug" value="{{ old('slug') }}" 
+                            class="block w-full rounded-2xl border-slate-100 bg-slate-50/50 px-5 py-4 text-slate-900 text-sm font-medium focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all placeholder:text-slate-400" 
+                            placeholder="e.g. promo-2024 (leave empty for auto .mp4)">
+                        <button type="button" id="gen-slug" class="px-6 bg-slate-100 text-slate-600 rounded-2xl text-xs font-bold hover:bg-slate-200 transition-colors whitespace-nowrap">
+                            Generate
+                        </button>
+                    </div>
+                    <p class="mt-3 text-xs text-slate-400 font-medium px-1 italic">Leave empty to auto-generate a random <b>.mp4</b> slug.</p>
                 </div>
-                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Kalau dikosongkan, sistem auto-generate slug random dengan akhiran .mp4 (itu cuma format slug, bukan file mp4 beneran).</p>
-            </div>
 
-            <div>
-                <label for="original-url-input" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Destination URL</label>
-                <input type="url" id="original-url-input" name="original_url" value="{{ old('original_url') }}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="https://example.com/landing">
-            </div>
+                <div>
+                    <label for="original_url" class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-3 px-1">Destination URL</label>
+                    <input type="url" id="original_url" name="original_url" value="{{ old('original_url') }}" required
+                        class="block w-full rounded-2xl border-slate-100 bg-slate-50/50 px-5 py-4 text-slate-900 text-sm font-medium focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all placeholder:text-slate-400" 
+                        placeholder="https://your-target-site.com/page">
+                </div>
 
-            <div>
-                <label for="status-select" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Status</label>
-                <select id="status-select" name="status" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                    <option value="active" @selected(old('status', 'active') === 'active')>active</option>
-                    <option value="inactive" @selected(old('status') === 'inactive')>inactive</option>
-                </select>
-            </div>
+                <div>
+                    <label for="status" class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-3 px-1">Initial Status</label>
+                    <select id="status" name="status" class="block w-full rounded-2xl border-slate-100 bg-slate-50/50 px-5 py-4 text-slate-900 text-sm font-medium focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all">
+                        <option value="active" @selected(old('status', 'active') === 'active')>Active (Redirects enabled)</option>
+                        <option value="inactive" @selected(old('status') === 'inactive')>Inactive (Disabled)</option>
+                    </select>
+                </div>
 
-            <div class="flex gap-2">
-                <button type="submit" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Create</button>
-                <a href="{{ route('admin.links.index') }}" class="py-2.5 px-5 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">Cancel</a>
-            </div>
-        </form>
+                <div class="pt-4 flex items-center gap-4">
+                    <button type="submit" class="flex-1 bg-blue-600 text-white py-4 rounded-2xl text-sm font-bold hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/20 active:scale-[0.98]">
+                        Create Shortlink
+                    </button>
+                    <a href="{{ route('admin.links.index') }}" class="px-8 py-4 text-slate-500 text-sm font-bold hover:text-slate-900 transition-colors">
+                        Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
     </div>
 
     @push('scripts')
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                const generateSlugBtn = document.getElementById('generate-slug-btn');
-                const slugInput = document.getElementById('slug-input');
-
-                if (generateSlugBtn && slugInput) {
-                    generateSlugBtn.addEventListener('click', function() {
-                        const randomString = Math.random().toString(36).substring(2, 10); // 8 random chars
-                        slugInput.value = randomString + '.mp4';
-                    });
-                }
-            });
-        </script>
+    <script>
+        document.getElementById('gen-slug')?.addEventListener('click', function() {
+            const random = Math.random().toString(36).substring(2, 10);
+            document.getElementById('slug').value = random + '.mp4';
+        });
+    </script>
     @endpush
 @endsection

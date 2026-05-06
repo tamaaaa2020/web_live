@@ -3,58 +3,68 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Login - {{ config('app.name', 'LinkForge SaaS') }}</title>
+    <title>Login - {{ config('app.name') }}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <style>body { font-family: 'Inter', sans-serif; }</style>
 </head>
-<body class="bg-gray-50 dark:bg-gray-900 antialiased font-sans text-gray-900 dark:text-gray-100">
-    <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-gray-100 dark:bg-gray-900">
-        <div>
-            <a href="/" class="text-3xl font-extrabold text-blue-600 dark:text-blue-500 tracking-tight">
-                {{ config('app.name', 'LinkForge') }}
-            </a>
-        </div>
+<body class="bg-slate-50 antialiased selection:bg-blue-100 selection:text-blue-900">
+    <div class="min-h-screen flex flex-col justify-center items-center p-6 relative overflow-hidden">
+        <!-- Background Decoration -->
+        <div class="absolute inset-0 z-0 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-blue-100/40 via-transparent to-transparent"></div>
+        <div class="absolute bottom-0 left-0 z-0 w-full h-1/2 bg-[radial-gradient(circle_at_bottom_left,_var(--tw-gradient-stops))] from-indigo-100/30 via-transparent to-transparent"></div>
+        
+        <div class="relative z-10 w-full max-w-[440px]">
+            <!-- Logo Area -->
+            <div class="text-center mb-12">
+                <div class="w-14 h-14 bg-blue-600 rounded-2xl flex items-center justify-center text-white text-2xl font-black shadow-xl shadow-blue-500/30 mx-auto mb-6">L</div>
+                <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">{{ config('app.name') }}</h1>
+                <p class="mt-3 text-slate-500 font-medium">Please sign in to access your dashboard.</p>
+            </div>
 
-        <div class="w-full sm:max-w-md mt-6 px-8 py-8 bg-white dark:bg-gray-800 shadow-lg sm:rounded-xl border border-gray-100 dark:border-gray-700">
-            <h2 class="text-2xl font-bold text-center mb-8 text-gray-800 dark:text-white">Sign in to account</h2>
-
-            @if ($errors->any())
-                <div class="mb-6 p-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-red-900/30 dark:text-red-400 border border-red-200 dark:border-red-800" role="alert">
-                    <ul class="list-disc list-inside">
+            <!-- Login Card -->
+            <div class="bg-white p-10 rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.04)] border border-slate-100/80">
+                @if ($errors->any())
+                    <div class="mb-8 p-4 bg-red-50 rounded-2xl border border-red-100 text-sm text-red-600 font-medium">
                         @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
+                            <div class="flex items-center gap-2">
+                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>
+                                {{ $error }}
+                            </div>
                         @endforeach
-                    </ul>
-                </div>
-            @endif
-
-            <form method="POST" action="{{ route('login.post') }}" class="space-y-6">
-                @csrf
-                
-                <div>
-                    <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Email Address</label>
-                    <div class="mt-2">
-                        <input id="email" name="email" type="email" autocomplete="email" required value="{{ old('email') }}" class="block w-full rounded-md border-0 py-2.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6 dark:bg-gray-700 dark:ring-gray-600 dark:text-white dark:placeholder:text-gray-400 dark:focus:ring-blue-500">
                     </div>
-                </div>
+                @endif
 
-                <div>
-                    <label for="password" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Password</label>
-                    <div class="mt-2">
-                        <input id="password" name="password" type="password" autocomplete="current-password" required class="block w-full rounded-md border-0 py-2.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6 dark:bg-gray-700 dark:ring-gray-600 dark:text-white dark:placeholder:text-gray-400 dark:focus:ring-blue-500">
+                <form method="POST" action="{{ route('login.post') }}" class="space-y-6">
+                    @csrf
+                    <div>
+                        <label for="email" class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 px-1">Email Address</label>
+                        <input id="email" name="email" type="email" required value="{{ old('email') }}" 
+                            class="block w-full rounded-2xl border-slate-100 bg-slate-50/50 px-5 py-4 text-slate-900 text-sm font-medium focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all placeholder:text-slate-400" placeholder="admin@example.com">
                     </div>
-                </div>
 
-                <div class="flex items-center justify-between">
+                    <div>
+                        <label for="password" class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 px-1">Password</label>
+                        <input id="password" name="password" type="password" required 
+                            class="block w-full rounded-2xl border-slate-100 bg-slate-50/50 px-5 py-4 text-slate-900 text-sm font-medium focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all placeholder:text-slate-400" placeholder="••••••••">
+                    </div>
+
                     <div class="flex items-center">
-                        <input id="remember" name="remember" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-600 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-500 dark:ring-offset-gray-800">
-                        <label for="remember" class="ml-2 block text-sm text-gray-900 dark:text-gray-300">Remember me</label>
+                        <label class="flex items-center cursor-pointer group">
+                            <input id="remember" name="remember" type="checkbox" class="w-5 h-5 rounded-lg border-slate-200 text-blue-600 focus:ring-blue-500/20 transition-all cursor-pointer">
+                            <span class="ml-3 text-sm font-semibold text-slate-500 group-hover:text-slate-900 transition-colors">Remember me</span>
+                        </label>
                     </div>
-                </div>
 
-                <div>
-                    <button type="submit" class="flex w-full justify-center rounded-md bg-blue-600 px-3 py-2.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 transition duration-150 ease-in-out">Sign in</button>
-                </div>
-            </form>
+                    <button type="submit" class="w-full bg-slate-900 text-white py-4 rounded-2xl text-sm font-bold hover:bg-slate-800 transition-all shadow-lg shadow-slate-900/10 active:scale-[0.98]">
+                        Sign in to Dashboard
+                    </button>
+                </form>
+            </div>
+            
+            <p class="mt-10 text-center text-xs font-bold text-slate-300 uppercase tracking-[0.2em]">
+                &copy; {{ date('Y') }} {{ config('app.name') }}
+            </p>
         </div>
     </div>
 </body>

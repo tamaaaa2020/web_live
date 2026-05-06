@@ -1,38 +1,49 @@
 @extends('admin.layout')
 
-@section('title', 'New Domain')
+@section('title', 'Add New Domain')
+@section('subtitle', 'Register a new domain to use for your shortlinks.')
 
 @section('content')
-    <div class="bg-white border border-gray-200 rounded-xl p-4 max-w-2xl dark:bg-gray-800 dark:border-gray-700">
-        <form method="post" action="{{ route('admin.domains.store') }}" class="space-y-4">
-            @csrf
+    <div class="max-w-2xl">
+        <div class="bg-white p-10 rounded-[2.5rem] border border-slate-100 shadow-sm">
+            <form method="POST" action="{{ route('admin.domains.store') }}" class="space-y-8">
+                @csrf
 
-            <div>
-                <label for="domain-name-input" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Domain Name</label>
-                <input type="text" id="domain-name-input" name="domain_name" value="{{ old('domain_name') }}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="example.com">
-            </div>
+                <div>
+                    <label for="domain_name" class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-3 px-1">Domain Name</label>
+                    <input type="text" id="domain_name" name="domain_name" value="{{ old('domain_name') }}" required
+                        class="block w-full rounded-2xl border-slate-100 bg-slate-50/50 px-5 py-4 text-slate-900 text-sm font-medium focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all placeholder:text-slate-400" 
+                        placeholder="e.g. myshortlink.com">
+                </div>
 
-            <div class="flex items-center">
-                <input id="is-active-checkbox" type="checkbox" name="is_active" value="1" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" @checked(old('is_active', '1') === '1')>
-                <label for="is-active-checkbox" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Active</label>
-            </div>
+                <div class="flex items-center group cursor-pointer w-fit">
+                    <input id="is_active" name="is_active" type="checkbox" value="1" @checked(old('is_active', '1') === '1')
+                        class="w-6 h-6 rounded-lg border-slate-200 text-blue-600 focus:ring-blue-500/20 transition-all cursor-pointer">
+                    <label for="is_active" class="ml-4 text-sm font-bold text-slate-700 cursor-pointer">Mark as Active</label>
+                </div>
 
-            <div>
-                <label for="failover-select" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Failover To (optional)</label>
-                <select id="failover-select" name="failover_to_domain_id" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                    <option value="">None</option>
-                    @foreach ($failoverTargets as $target)
-                        <option value="{{ $target->id }}" @selected((string) old('failover_to_domain_id') === (string) $target->id)>
-                            {{ $target->domain_name }}{{ $target->is_active ? '' : ' (inactive)' }}
-                        </option>
-                    @endforeach
-                </select>
-            </div>
+                <div>
+                    <label for="failover_to_domain_id" class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-3 px-1">Failover Destination (Optional)</label>
+                    <select id="failover_to_domain_id" name="failover_to_domain_id" class="block w-full rounded-2xl border-slate-100 bg-slate-50/50 px-5 py-4 text-slate-900 text-sm font-medium focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all">
+                        <option value="">No Failover</option>
+                        @foreach ($failoverTargets as $target)
+                            <option value="{{ $target->id }}" @selected((string) old('failover_to_domain_id') === (string) $target->id)>
+                                {{ $target->domain_name }} ({{ $target->is_active ? 'Active' : 'Inactive' }})
+                            </option>
+                        @endforeach
+                    </select>
+                    <p class="mt-3 text-xs text-slate-400 font-medium px-1 italic">If this domain is disabled, traffic will automatically redirect to the selected failover domain.</p>
+                </div>
 
-            <div class="flex gap-2">
-                <button type="submit" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Create</button>
-                <a href="{{ route('admin.domains.index') }}" class="py-2.5 px-5 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">Cancel</a>
-            </div>
-        </form>
+                <div class="pt-4 flex items-center gap-4">
+                    <button type="submit" class="flex-1 bg-blue-600 text-white py-4 rounded-2xl text-sm font-bold hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/20 active:scale-[0.98]">
+                        Add Domain
+                    </button>
+                    <a href="{{ route('admin.domains.index') }}" class="px-8 py-4 text-slate-500 text-sm font-bold hover:text-slate-900 transition-colors">
+                        Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
     </div>
 @endsection
