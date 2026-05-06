@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Link;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
 class LinkController extends Controller
@@ -43,10 +44,17 @@ class LinkController extends Controller
     public function store(Request $request)
     {
         $data = $request->validate([
-            'slug' => ['required', 'string', 'max:255', 'regex:/^[A-Za-z0-9._-]+$/', 'unique:links,slug'],
+            'slug' => ['nullable', 'string', 'max:255', 'regex:/^[A-Za-z0-9._-]+$/', Rule::unique('links', 'slug')],
             'original_url' => ['required', 'string', 'max:2048', 'url'],
             'status' => ['required', 'string', Rule::in(['active', 'inactive'])],
         ]);
+
+        $slug = strtolower(trim((string) ($data['slug'] ?? '')));
+        if ($slug === '') {
+            $slug = $this->generateUniqueSlugWithExtension('mp4');
+        }
+
+        $data['slug'] = $slug;
 
         Link::create($data);
 
@@ -74,6 +82,8 @@ class LinkController extends Controller
             'status' => ['required', 'string', Rule::in(['active', 'inactive'])],
         ]);
 
+        $data['slug'] = strtolower($data['slug']);
+
         $link->update($data);
 
         return redirect()->route('admin.links.index');
@@ -100,5 +110,20 @@ class LinkController extends Controller
 
         return redirect()->route('admin.links.index');
     }
-}
 
+    private function generateUniqueSlugWithExtension(string $extension): string
+    {
+        $extension = ltrim(strtolower(trim($extension)), '.');
+
+        for ($i = 0; $i < 25; $i++) {
+            $base = Str::lower(Str::random(10));
+            $slug = $base.'.'.$extension;
+
+            if (!Link::query()->where('slug', $slug)->exists()) {
+                return $slug;
+            }
+        }
+
+        abort(500);
+    }
+}
